@@ -16,10 +16,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTodoListHandler(w http.ResponseWriter, r *http.Request) {
-	//list := []*model.Todo{}
-	//for _, v := range todoMap {
-	//	list = append(list, v)
-	//}
 	list := model.GetTodos()
 	rd.JSON(w, http.StatusOK, list)
 }
@@ -27,9 +23,6 @@ func getTodoListHandler(w http.ResponseWriter, r *http.Request) {
 func addTodoHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	todo := model.AddTodo(name)
-	//id := len(todoMap) + 1
-	//todo := &Todo{id, name, false, time.Now()}
-	//todoMap[id] = todo
 	rd.JSON(w, http.StatusCreated, todo)
 }
 
@@ -52,12 +45,7 @@ func removeTodoHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		rd.JSON(w, http.StatusOK, Success{false})
 	}
-	//if _, ok := todoMap[id]; ok {
-	//	delete(todoMap, id)
-	//	rd.JSON(w, http.StatusOK, Success{true})
-	//} else {
-	//	rd.JSON(w, http.StatusOK, Success{false})
-	//}
+
 }
 
 func completeTodoHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,18 +54,12 @@ func completeTodoHandler(w http.ResponseWriter, r *http.Request) {
 	id := requestTodo.ID
 	completed := requestTodo.Completed
 
-	model.CompleteTodo(id, )
+	model.CompleteTodo(id, completed)
 
-	//if todo, ok := todoMap[id]; ok {
-	//	todo.Completed = completed
-	//	rd.JSON(w, http.StatusOK, Success{true})
-	//} else {
-	//	rd.JSON(w, http.StatusOK, Success{false})
-	//}
 }
 
 func MakeHandler() http.Handler {
-	todoMap = make(map[int]*Todo)
+	//todoMap = make(map[int]*Todo)
 	//addTestTodos()
 	rd = render.New()
 	r := mux.NewRouter()

@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strconv"
 	"testing"
+	"web16/model"
 )
 
 func TestTodos(t *testing.T) {
@@ -20,7 +21,7 @@ func TestTodos(t *testing.T) {
 	assert.NoError(err)
 	assert.Equal(http.StatusCreated, resp.StatusCode)
 
-	var todo Todo
+	var todo model.Todo
 	err = json.NewDecoder(resp.Body).Decode(&todo)
 	assert.NoError(err)
 	assert.Equal(todo.Name, "test todo")
@@ -38,7 +39,7 @@ func TestTodos(t *testing.T) {
 	resp, err = http.Get(ts.URL + "/todos")
 	assert.NoError(err)
 	assert.Equal(http.StatusOK, resp.StatusCode)
-	todos := []*Todo{}
+	todos := []*model.Todo{}
 	err = json.NewDecoder(resp.Body).Decode(&todos)
 	assert.NoError(err)
 	assert.Equal(2, len(todos))
@@ -53,7 +54,7 @@ func TestTodos(t *testing.T) {
 		}
 	}
 
-	reqTodo := &Todo{ID: id2, Completed: true}
+	reqTodo := &model.Todo{ID: id2, Completed: true}
 	data, _ := json.Marshal(reqTodo)
 
 	req, err := http.NewRequest("PUT", ts.URL+"/todos", bytes.NewBuffer(data))
@@ -69,7 +70,7 @@ func TestTodos(t *testing.T) {
 	resp, err = http.Get(ts.URL + "/todos")
 	assert.NoError(err)
 	assert.Equal(http.StatusOK, resp.StatusCode)
-	todos = []*Todo{}
+	todos = []*model.Todo{}
 	err = json.NewDecoder(resp.Body).Decode(&todos)
 	assert.NoError(err)
 	assert.Equal(1, len(todos))
