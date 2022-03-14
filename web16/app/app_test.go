@@ -7,14 +7,22 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strconv"
 	"testing"
 	"web16/model"
 )
 
 func TestTodos(t *testing.T) {
+	filepath := "./test.db"
+	os.Remove(filepath)
+
 	assert := assert.New(t)
-	ts := httptest.NewServer(MakeHandler())
+
+	ah := MakeHandler(filepath)
+	defer ah.Close()
+
+	ts := httptest.NewServer(ah)
 	defer ts.Close()
 
 	resp, err := http.PostForm(ts.URL+"/todos", url.Values{"name": {"test todo"}})
@@ -24,7 +32,7 @@ func TestTodos(t *testing.T) {
 	var todo model.Todo
 	err = json.NewDecoder(resp.Body).Decode(&todo)
 	assert.NoError(err)
-	assert.Equal(todo.Name, "test todo")
+	assert.Equal("test todo", todo.Name)
 	id1 := todo.ID
 
 	resp, err = http.PostForm(ts.URL+"/todos", url.Values{"name": {"test todo2"}})
