@@ -3,7 +3,6 @@ package app
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -25,8 +24,6 @@ func TestTodos(t *testing.T) {
 
 	ts := httptest.NewServer(ah)
 	defer ts.Close()
-
-	fmt.Println("test")
 
 	resp, err := http.PostForm(ts.URL+"/todos", url.Values{"name": {"test todo"}})
 	assert.NoError(err)
