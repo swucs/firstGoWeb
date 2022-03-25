@@ -6,20 +6,31 @@ import (
 	"github.com/robfig/cron/v3"
 	"log"
 	"os"
+	"reflect"
 )
+
+var jobMethods map[string]func()
 
 func TestCron() {
 
 	myApp := app.MyApp{}
-	myApp.Print()
+	anotherApp := app.AnotherApp{}
+	jobMethods = map[string]func(){
+		"myApp.Print":      myApp.Print,
+		"anotherApp.Print": anotherApp.Print,
+	}
 
 	c := cron.New(cron.WithLogger(
 		cron.VerbosePrintfLogger(log.New(os.Stdout, "cron: ", log.LstdFlags))))
 
+	c.AddFunc("@every 5s", func() {
+		reflect.ValueOf(jobMethods["myApp.Print"]).Call([]reflect.Value{})
+	})
+
 	i := 1
 	c.AddFunc("*/1 * * * *", func() {
 		fmt.Println("Execute every minute", i)
-		log.Panic("test panic")
+		//log.Panic("test panic")
 		i++
 	})
 
