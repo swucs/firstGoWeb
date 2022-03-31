@@ -2,8 +2,11 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
+	"github.com/xuri/excelize/v2"
+	"log"
 	"net/http"
 	"strconv"
 	"web16/model"
@@ -73,6 +76,36 @@ func MakeHandler(filepath string) *AppHandler {
 	r.HandleFunc("/todos", a.addTodoHandler).Methods("POST")
 	r.HandleFunc("/todos/{id:[0-9]+}", a.removeTodoHandler).Methods("DELETE")
 	r.HandleFunc("/todos", a.completeTodoHandler).Methods("PUT")
+	r.HandleFunc("/excel", downloadExcelHandler)
 
 	return a
+}
+
+
+func downloadExcelHandler(w http.ResponseWriter, r *http.Request) {
+	file := excelize.NewFile()
+
+	sheet := file.NewSheet("Sheet1")
+	sumSheet := file.NewSheet("sum-sheet")
+
+	file.SetActiveSheet(sheet)
+	file.SetActiveSheet(sumSheet)
+
+	file.SetCellValue("Sheet1", "A1", "VALUE")
+
+	file.SetCellValue("sum-sheet", "A1", "SUM")
+	file.SetCellValue("sum-sheet", "A2", 100)
+	file.SetCellValue("sum-sheet", "B2", 250)
+	file.SetCellFormula("sum-sheet", "B1", "SUM('sum-sheet'!A2,'sum-sheet'!B2)")
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment;filename=userInputData.xlsx")
+	w.Header().Set("File-Name", "userInputData.xlsx")
+	w.Header().Set("Content-Transfer-Encoding", "binary")
+	w.Header().Set("Expires", "0")
+	err := file.Write(w)
+	if err != nil {
+		fmt.Println("에러 발생")
+		log.Fatalln("에러발생")
+	}
 }

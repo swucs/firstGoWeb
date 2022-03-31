@@ -1,0 +1,4 @@
+github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
+github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
+github.com/zhuxiujia/GoMybatis v6.5.8+incompatible h1:agob9MW3kG/tQccY8yG42oZnoN5fKkdYwgqwx1DqLPo=
+github.com/zhuxiujia/GoMybatis v6.5.8+incompatible/go.mod h1:t9CJ3HKMWSNXnAXQpm8JoYZ6L6bfxwm7Wxyrib54f0Y=
