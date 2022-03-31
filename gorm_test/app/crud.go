@@ -111,4 +111,13 @@ func Crud(db *gorm.DB) {
 		Joins("left join products on products.id = users.id").
 		Scan(&result2)
 	fmt.Println(result2)
+
+	paramUser := User{Name: "hannah"}
+	db.Model(&User{}).
+		Select("users.name, products.code").
+		Joins("left join products on products.id = users.id").
+		Where("users.name = @Name or products.code = @Name", paramUser).
+		Find(&result2)
+	fmt.Println(result2)
+
 }
