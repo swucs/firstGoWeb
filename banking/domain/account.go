@@ -5,6 +5,8 @@ import (
 	"banking/errs"
 )
 
+const DbTSLayout = "2006-01-02 15:04:05"
+
 type Account struct {
 	AccountId   string
 	CustomerId  string
@@ -20,4 +22,13 @@ func (a Account) ToNewAccountResponseDto() dto.NewAccountResponse {
 
 type AccountRepository interface {
 	Save(Account) (*Account, *errs.AppError)
+	SaveTransaction(Transaction) (*Transaction, *errs.AppError)
+	FindBy(string) (*Account, *errs.AppError)
+}
+
+func (a Account) CanWithdraw(amount float64) bool {
+	if a.Amount < amount {
+		return false
+	}
+	return true
 }
