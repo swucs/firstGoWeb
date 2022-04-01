@@ -3,13 +3,8 @@ package domain
 import (
 	"banking/errs"
 	"banking/logger"
-	"banking/sqlLogAdapter"
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	sqldblogger "github.com/simukti/sqldb-logger"
-	"github.com/sirupsen/logrus"
-	"time"
 )
 
 type CustomerRepositoryDb struct {
@@ -72,45 +67,6 @@ func (d CustomerRepositoryDb) ById(id string) (*Customer, *errs.AppError) {
 	return &c, nil
 }
 
-func NewCustomeRepositoryDb() CustomerRepositoryDb {
-
-	dsn := "root:1234@tcp(localhost:3306)/banking"
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		panic(err)
-	}
-
-	logger := logrus.New()
-	logger.Level = logrus.InfoLevel
-	logger.Formatter = &logrus.TextFormatter{
-		ForceColors:   true,
-		FullTimestamp: true,
-	}
-	loggerAdapter := sqlLogAdapter.NewLogrusAdapter(logger)
-
-	//zapCfg := zap.NewProductionConfig()
-	//zapCfg.Level = zap.NewAtomicLevelAt(zap.InfoLevel) // whatever minimum level
-	//zapCfg.DisableCaller = true
-	//logger, _ := zapCfg.Build()
-	//loggerAdapter := sqlLogAdapter.NewZapAdapter(logger)
-
-	db = sqldblogger.OpenDriver(
-		dsn,
-		db.Driver(),
-		loggerAdapter,
-		sqldblogger.WithSQLQueryAsMessage(true),
-		sqldblogger.WithPreparerLevel(sqldblogger.LevelDebug),
-	)
-
-	//client, err := sqlx.Open("mysql", "root:1234@tcp(localhost:3306)/banking")
-	//if err != nil {
-	//	panic(err)
-	//}
-
-	client := sqlx.NewDb(db, "mysql")
-
-	client.SetConnMaxLifetime(time.Minute * 3)
-	client.SetMaxOpenConns(10)
-	client.SetMaxIdleConns(10)
-	return CustomerRepositoryDb{client}
+func NewCustomerRepositoryDb(dbClient *sqlx.DB) CustomerRepositoryDb {
+	return CustomerRepositoryDb{dbClient}
 }
