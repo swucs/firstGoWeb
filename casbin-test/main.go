@@ -4,6 +4,7 @@ import (
 	"casbin-test/authorization"
 	"casbin-test/model"
 	"github.com/casbin/casbin"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
@@ -17,16 +18,18 @@ func main() {
 	}
 
 	// setup routes
-	mux := http.NewServeMux()
+	router := mux.NewRouter()
+	//mux := http.NewServeMux()
 
-	mux.HandleFunc("/login", loginHandler)
-	mux.HandleFunc("/member/current", currentMemberHandler)
-	mux.HandleFunc("/member/role", memberRoleHandler)
-	mux.HandleFunc("/admin/stuff", adminHandler)
+	router.HandleFunc("/", homeHandler).Methods(http.MethodGet)
+	router.HandleFunc("/login", loginHandler).Methods(http.MethodGet)
+	router.HandleFunc("/member/current", currentMemberHandler).Methods(http.MethodGet)
+	router.HandleFunc("/member/role", memberRoleHandler).Methods(http.MethodGet)
+	router.HandleFunc("/admin/stuff", adminHandler).Methods(http.MethodGet)
 
 	users := createUsers()
 	log.Print("Server started on localhost:3000")
-	log.Fatal(http.ListenAndServe(":3000", authorization.Authorizer(authEnforcer, users, "admin", "swucs")(mux)))
+	log.Fatal(http.ListenAndServe(":3000", authorization.Authorizer(authEnforcer, users, "admin", "swucs")(router)))
 }
 
 func createUsers() model.Users {
@@ -50,8 +53,12 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	name := r.PostFormValue("name")
+	name := r.FormValue("name")
 	writeSuccess("loginHandler : "+name, w)
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	writeSuccess("homeHandler", w)
 }
 
 func writeError(status int, message string, w http.ResponseWriter, err error) {
