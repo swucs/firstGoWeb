@@ -1,0 +1,5 @@
+p, admin, /*, (GET)|(POST)
+p, anonymous, /login, GET
+p, member, /login, GET
+p, admin, /login, GET
+p, member, /member/*, GET
