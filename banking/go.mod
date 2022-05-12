@@ -10,6 +10,8 @@ require (
 )
 
 require (
+	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
+	github.com/casbin/casbin v1.9.1 // indirect
 	github.com/simukti/sqldb-logger v0.0.0-20201125162808-c35f87e285f2 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect

@@ -1,11 +1,13 @@
 package app
 
 import (
+	"banking/authorization"
 	"banking/domain"
 	"banking/service"
 	"banking/sqlLogAdapter"
 	"database/sql"
 	"fmt"
+	"github.com/casbin/casbin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -22,6 +24,25 @@ func sanityCheck() {
 		os.Getenv("SERVER_PORT") == "" {
 		log.Fatal("Environment variable not defined...")
 	}
+}
+
+/**
+
+ */
+func createAuthEnforcer() *casbin.Enforcer {
+
+	//if os.Getenv("AUTH_MODEL_FILEPATH") == "" ||
+	//	os.Getenv("AUTH_POLICY_FILEPATH") == "" {
+	//	log.Fatal("The Casbin environment variable not defined...")
+	//}
+
+	//casbin 권한정책 세팅
+	authEnforcer, err := casbin.NewEnforcerSafe("./auth_model.conf", "./policy.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return authEnforcer
 }
 
 func Start() {
@@ -46,10 +67,17 @@ func Start() {
 
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router))
+
+	//권한체크 설정
+	enforcer := createAuthEnforcer()
+
+	//서버시작
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), authorization.Authorizer(enforcer, "admin", "test")(router)))
 }
 
 func getDbClient() *sqlx.DB {
+
+	//go 실행시 환경변수 입력
 	dbUser := os.Getenv("DB_USER")
 	dbPasswd := os.Getenv("DB_PASSWD")
 	dbAddr := os.Getenv("DB_ADDR")

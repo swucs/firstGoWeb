@@ -1,0 +1,10 @@
+p, admin, /admin/admin/*, (GET)|(POST)
+p, anonymous, /login, GET
+p, member, /login, GET
+p, admin, /login, GET
+p, member, /member/*, GET
+
+
+p, member, /customers/:customer_id, GET
+p, admin, /customers, GET
+p, member, /customers/:customer_id/account, (GET)|(POST)
