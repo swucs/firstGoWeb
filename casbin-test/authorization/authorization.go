@@ -14,11 +14,14 @@ func Authorizer(e *casbin.Enforcer, users model.Users, role string, uid string) 
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 
+			fmt.Printf("role : %s", role)
+			fmt.Printf("uid : %s", uid)
+
 			if role == "" {
 				role = "anonymous"
 			} else if role == "member" {
 				// if it's a member, check if the user still exists
-				fmt.Println("member입니다.")
+				fmt.Printf("member입니다.")
 			}
 
 			// casbin enforce

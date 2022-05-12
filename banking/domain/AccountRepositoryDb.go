@@ -3,6 +3,7 @@ package domain
 import (
 	"banking/errs"
 	"banking/logger"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"strconv"
 )
@@ -20,16 +21,18 @@ func (d AccountRepositoryDb) Save(a Account) (*Account, *errs.AppError) {
 			amount,
 			status
 		) VALUES (
-			?, 
-			?, 
-			?, 
-			?, 
-			?
+			:customer_id, 
+			:opening_date, 
+			:account_type, 
+			:amount, 
+			:status
 		)
 	`
-	result, err := d.client.Exec(sqlInsert, a.CustomerId, a.OpeningDate, a.AccountType, a.Amount, a.Status)
+	stmt, _ := d.client.PrepareNamed(sqlInsert)
+	result, err := stmt.Exec(&a)
 	if err != nil {
 		logger.Error("Error while creating new account :  " + err.Error())
+		fmt.Errorf(err.Error())
 		return nil, errs.NewUnexpectedError("Unexpected error from database")
 	}
 
@@ -44,25 +47,32 @@ func (d AccountRepositoryDb) Save(a Account) (*Account, *errs.AppError) {
 
 func (d AccountRepositoryDb) SaveTransaction(t Transaction) (*Transaction, *errs.AppError) {
 	// starting the database transaction block
-	tx, err := d.client.Begin()
-	if err != nil {
-		logger.Error("Error while starting a new transaction for bank account transaction: " + err.Error())
-		return nil, errs.NewUnexpectedError("Unexpected database error")
-	}
+	//tx, err := d.client.Begin()
+	tx := d.client.MustBegin()
+
+	//if err != nil {
+	//	logger.Error("Error while starting a new transaction for bank account transaction: " + err.Error())
+	//	return nil, errs.NewUnexpectedError("Unexpected database error")
+	//}
 
 	// inserting bank account transaction
 	insertTrasactionSQL := `
 		INSERT INTO transactions (
 			account_id, amount, transaction_type, transaction_date
-		) values (?, ?, ?, ?)
+		) values (:account_id, :amount, :transaction_type, :transaction_date)
 	`
-	result, _ := tx.Exec(insertTrasactionSQL, t.AccountId, t.Amount, t.TransactionType, t.TransactionDate)
+	//result, _ := tx.Exec(insertTrasactionSQL, t.AccountId, t.Amount, t.TransactionType, t.TransactionDate)
+	stmt, _ := tx.PrepareNamed(insertTrasactionSQL)
+	result, err := stmt.Exec(&t)
 
 	// updating account balance
 	if t.IsWithdrawal() {
-		_, err = tx.Exec(`UPDATE accounts SET amount = amount - ? where account_id = ?`, t.Amount, t.AccountId)
+		//_, err = tx.Exec(`UPDATE accounts SET amount = amount - ? where account_id = ?`, t.Amount, t.AccountId)
+		_, err = tx.NamedExec(`UPDATE accounts SET amount = amount - :amount where account_id = :account_id`, &t)
+
 	} else {
-		_, err = tx.Exec(`UPDATE accounts SET amount = amount + ? where account_id = ?`, t.Amount, t.AccountId)
+		//_, err = tx.Exec(`UPDATE accounts SET amount = amount + ? where account_id = ?`, t.Amount, t.AccountId)
+		_, err = tx.NamedExec(`UPDATE accounts SET amount = amount + :amount where account_id = :account_id`, &t)
 	}
 
 	// in case of error Rollback, and changes from both the tables will be reverted

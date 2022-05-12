@@ -1,0 +1,9 @@
+### Send POST request with json body
+POST http://localhost:8000/customers/2000/account
+Content-Type: application/json
+
+{
+  "customer_id": "2000",
+  "account_type": "saving",
+  "amount": 5000
+}

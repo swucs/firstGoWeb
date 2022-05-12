@@ -51,7 +51,17 @@ func (d CustomerRepositoryDb) FindAll(status string) ([]Customer, error) {
 }
 
 func (d CustomerRepositoryDb) ById(id string) (*Customer, *errs.AppError) {
-	customerSql := "select customer_id, name, city, zipcode, date_of_birth, status from customers where customer_id = ?"
+	customerSql := `
+		select 
+				customer_id
+				 , name
+				 , city
+				 , zipcode
+				 , date_of_birth
+				 , status 
+		from 	customers 
+		where	customer_id = ?
+	`
 	var c Customer
 	err := d.client.Get(&c, customerSql, id)
 

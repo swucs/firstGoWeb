@@ -8,10 +8,10 @@ import (
 const DbTSLayout = "2006-01-02 15:04:05"
 
 type Account struct {
-	AccountId   string
-	CustomerId  string
-	OpeningDate string
-	AccountType string
+	AccountId   string `db:"account_id"`
+	CustomerId  string `db:"customer_id"`
+	OpeningDate string `db:"opening_date"`
+	AccountType string `db:"account_type"`
 	Amount      float64
 	Status      string
 }
