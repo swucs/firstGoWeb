@@ -12,11 +12,11 @@ import (
 )
 
 func InitializeCustomer() handlers.CustomerHandler {
-	wire.Build(config.GetDbClient, domain.NewCustomerRepositoryDb, service.NewCustomerService, handlers.NewCustomerHandler)
+	wire.Build(config.GetDbClient, domain.NewCustomerRepository, service.NewCustomerService, handlers.NewCustomerHandler)
 	return handlers.CustomerHandler{}
 }
 
 func InitializeAccount() handlers.AccountHandler {
-	wire.Build(config.GetDbClient, domain.NewAccountRepositoryDb, service.NewAccountService, handlers.NewAccountHandler)
+	wire.Build(config.GetDbClient, domain.NewAccountRepository, service.NewAccountService, handlers.NewAccountHandler)
 	return handlers.AccountHandler{}
 }

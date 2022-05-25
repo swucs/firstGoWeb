@@ -77,6 +77,6 @@ func (d CustomerRepositoryDb) ById(id string) (*Customer, *errs.AppError) {
 	return &c, nil
 }
 
-func NewCustomerRepositoryDb(dbClient *sqlx.DB) CustomerRepository {
+func NewCustomerRepository(dbClient *sqlx.DB) CustomerRepository {
 	return CustomerRepositoryDb{dbClient}
 }

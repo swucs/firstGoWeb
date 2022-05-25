@@ -25,7 +25,7 @@ func Authorizer(e *casbin.Enforcer, role string, uid string) func(next http.Hand
 			if res {
 				next.ServeHTTP(w, r)
 			} else {
-				fmt.Printf("권한없음 : [role : %s, uid : %s]\n", role, uid)
+				fmt.Printf("권한없음[role : %s, uid : %s]: %s\n", role, uid, r.URL.Path)
 				writeError(http.StatusForbidden, "FORBIDDEN", w, errors.New("unauthorized"))
 				return
 			}
