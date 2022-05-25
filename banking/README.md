@@ -54,6 +54,9 @@ accountHandler := module.InitializeAccount()
 * 주의사항
   * 패키지 순환 참조가 있는 경우 에러가 발생할 수 있다.
 
+### Viper 적용해보기
+@TODO 작성필요
+
 ### cabin : 권한체크 RBAC 적용
 @TODO 작성필요
 
