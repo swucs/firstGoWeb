@@ -30,7 +30,7 @@ func InitializeAccount() handlers.AccountHandler {
 
 func InitializeCustomer() handlers.CustomerHandler {
 	db := config.GetDbClient()
-	customerRepository := domain.NewCustomerRepositoryDb(db)
+	customerRepository := domain.NewCustomerRepository(db)
 	customerService := service.NewCustomerService(customerRepository)
 	customerHandler := handlers.NewCustomerHandler(customerService)
 	return customerHandler
@@ -38,7 +38,7 @@ func InitializeCustomer() handlers.CustomerHandler {
 
 func InitializeAccount() handlers.AccountHandler {
 	db := config.GetDbClient()
-	accountRepository := domain.NewAccountRepositoryDb(db)
+	accountRepository := domain.NewAccountRepository(db)
 	accountService := service.NewAccountService(accountRepository)
 	accountHandler := handlers.NewAccountHandler(accountService)
 	return accountHandler
