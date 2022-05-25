@@ -6,5 +6,5 @@ p, member, /member/*, GET
 
 
 p, member, /customers/:customer_id, GET
-p, admin, /customers, GET
+p, member, /customers, GET
 p, member, /customers/:customer_id/account, (GET)|(POST)

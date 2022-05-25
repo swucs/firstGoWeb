@@ -118,6 +118,6 @@ func (d AccountRepositoryDb) FindBy(accountId string) (*Account, *errs.AppError)
 	return &account, nil
 }
 
-func NewAccountRepositoryDb(dbClient *sqlx.DB) AccountRepositoryDb {
+func NewAccountRepositoryDb(dbClient *sqlx.DB) AccountRepository {
 	return AccountRepositoryDb{dbClient}
 }

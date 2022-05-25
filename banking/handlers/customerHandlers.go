@@ -1,18 +1,23 @@
-package app
+package handlers
 
 import (
 	"banking/service"
+	"banking/utils"
 	"encoding/json"
 	"encoding/xml"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
-type CustomerHandlers struct {
+type CustomerHandler struct {
 	service service.CustomerService
 }
 
-func (ch *CustomerHandlers) getAllCustomers(w http.ResponseWriter, r *http.Request) {
+func NewCustomerHandler(service service.CustomerService) CustomerHandler {
+	return CustomerHandler{service}
+}
+
+func (ch *CustomerHandler) GetAllCustomers(w http.ResponseWriter, r *http.Request) {
 	customers, _ := ch.service.GetAllCustomer("")
 
 	if r.Header.Get("Content-Type") == "application/xml" {
@@ -24,21 +29,13 @@ func (ch *CustomerHandlers) getAllCustomers(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-func (ch *CustomerHandlers) getCustomer(w http.ResponseWriter, r *http.Request) {
+func (ch *CustomerHandler) GetCustomer(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["customer_id"]
 	customer, appErr := ch.service.GetCustomer(id)
 	if appErr != nil {
-		writeResponse(w, appErr.Code, appErr.AsMessage())
+		utils.WriteResponse(w, appErr.Code, appErr.AsMessage())
 	} else {
-		writeResponse(w, http.StatusOK, customer)
-	}
-}
-
-func writeResponse(w http.ResponseWriter, code int, data interface{}) {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(code)
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		panic(err)
+		utils.WriteResponse(w, http.StatusOK, customer)
 	}
 }
